@@ -1,27 +1,35 @@
 var http = require('http');
 
-var connect = function(host, port, callback) {
-  // Try to connect to supplied host.
-  http.get('http://' + host + ':' + port, function(res) {
-    console.log('Got response %d from %s', res.statusCode, host);
-    res.setEncoding('utf8');
-    res.on('data', function(d) {
-      callback(null, d);
-    });
-    res.on('error', function(e) {
-      callback(e);
-    });
+var connect = function(config) {
+  var host = config.host;
+  var port = config.port;
+  var path = config.path;
+  var callback = config.callback;
+  var WebSocket = require('ws');
+  var ws = new WebSocket('ws://' + host + ':' + port + '/' + path);
+  ws.on('open', function() {
+    console.log('Connected to %s, sending greeting', host);
+    ws.send('hello');
+    if (config.ws) {
+      config.ws(ws);
+    }
+  });
+  ws.on('message', function(data, flags) {
+    callback(null, data, flags);
+  });
+  ws.on('error', function(err) {
+    callback(err);
   });
 };
+
 
 exports.log = function(msg) {
   console.log(msg);
 };
 
 exports.start = function(config) {
-  var cb = this.log;
-  if (config.callback) {
-    cb = config.callback;
+  if (!config.callback) {
+    config.callback = this.log;
   }
-  connect(config.host, config.port, cb);
+  connect(config);
 };

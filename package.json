@@ -29,6 +29,7 @@
     "jshint": "~2.4.4"
   },
   "dependencies": {
-    "js-yaml": "~3.0.2"
+    "js-yaml": "~3.0.2",
+    "ws": "~0.4.31"
   }
 }

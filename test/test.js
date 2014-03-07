@@ -1,6 +1,7 @@
 var app = require('../src/app');
 var http = require('http');
 var should = require('should');
+var WebSocketServer = require('ws').Server;
 
 var response, server;
 var config = {
@@ -10,23 +11,47 @@ var config = {
 
 describe('Client part', function() {
   it('Should connect to the specified server', function(done) {
-    response = function(req, res) {
-      done();
-      server.close();
-    };
-    server = http.createServer(response).listen(54321);
+    var wss = new WebSocketServer({port: config.port});
+    wss.on('connection', function(ws) {
+      ws.on('message', function(message) {
+        if (message === 'hello') {
+          wss.close(1234);
+          done();
+        }
+      });
+    });
     app.start(config);
   });
+  var s;
   it('Should call callback when sent data', function(done) {
-    response = function(req, res) {
-      res.write('test');
-      server.close();
-    };
-    server = http.createServer(response).listen(54321);
+    var wss2 = new WebSocketServer({port: config.port});
+    wss2.on('connection', function(ws) {
+      s = wss2;
+      ws.on('message', function(message) {
+        if (message === 'hello') {
+          ws.send('world2');
+        }
+      });
+    });
     config.callback = function(err, data) {
       should(err).equal(null);
-      data.should.eql('test');
+      data.should.eql('world2');
       done(err);
+    };
+    app.start(config);
+  });
+
+  it('Should call callback with error', function(done) {
+    s.close();
+    var wss3 = new WebSocketServer({port: config.port});
+    wss3.on('connection', function(ws) {
+    });
+    config.callback = function(err, data) {
+      should(err).not.equal(null);
+      done();
+    };
+    config.ws = function(webss) {
+      webss.emit('error');
     };
     app.start(config);
   });
