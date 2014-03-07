@@ -1,5 +1,6 @@
 pi-beard
 ========
+[![Build Status](https://secure.travis-ci.org/eiriksm/pi-beard.png)](http://travis-ci.org/eiriksm/pi-beard)
 
 Pi client of something.
 

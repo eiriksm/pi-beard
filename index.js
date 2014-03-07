@@ -1,20 +1,14 @@
-var http = require('http');
+var app = require('./src/app');
+var yaml = require('js-yaml');
+var fs = require('fs');
 
-http.createServer(function(req, res) {
-  setInterval(function() {
-    res.write(Date.now() + '');
-  }, 1000);
-}).listen(8900);
-
-var connect = function(host, port) {
-  // Try to connect to supplied host.
-  http.get('http://' + host + ':' + port, function(res) {
-    console.log('Got response %d from %s', res.statusCode, host);
-    res.setEncoding('utf8');
-    res.on('data', function(d) {
-      console.log(d);
-    });
-  });
+// Read app config.
+try {
+  app.config = yaml.safeLoad(fs.readFileSync('../config.yml', 'utf8'));
+}
+catch(err) {
+  app.log('No config.yml file found. Using default.config.yml for now. This is most likely not what you want to do.', 'w');
+  app.config = yaml.safeLoad(fs.readFileSync('./default.config.yml', 'utf8'));
 }
 
-connect('localhost', 8900);
+app.start(app.config);
