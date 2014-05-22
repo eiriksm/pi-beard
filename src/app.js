@@ -1,23 +1,30 @@
-var http = require('http');
+var util = require('util');
+var Primus = require('primus');
+var Emitter = require('primus-emitter');
 
 var connect = function(config) {
   var host = config.host;
   var port = config.port;
-  var path = config.path;
   var callback = config.callback;
-  var WebSocket = require('ws');
-  var ws = new WebSocket('ws://' + host + ':' + port + '/' + path);
-  ws.on('open', function() {
-    console.log('Connected to %s, sending greeting', host);
-    ws.send('hello');
-    if (config.ws) {
-      config.ws(ws);
+  var Socket = Primus.createSocket({
+    transformer: 'engine.io',
+    plugin: {
+      'Emitter': require('primus-emitter')
     }
   });
-  ws.on('message', function(data, flags) {
+
+  var client = new Socket(util.format('ws://%s:%d/', host, port));
+  client.on('open', function() {
+    console.log('Connected to %s, sending greeting', host);
+    client.send('auth', config.auth);
+    if (config.ws) {
+      config.ws(client);
+    }
+  });
+  client.on('data', function(data, flags) {
     callback(null, data, flags);
   });
-  ws.on('error', function(err) {
+  client.on('error', function(err) {
     callback(err);
   });
 };
