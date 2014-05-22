@@ -5,3 +5,4 @@ node_js:
 
 script:
   - npm test
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js > /dev/null 2>&1
