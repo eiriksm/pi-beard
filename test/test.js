@@ -50,12 +50,17 @@ describe('Client part', function() {
       s = wss2;
       ws.on('auth', function(message) {
         if (message === config.auth) {
-          ws.send('authed', 'whatevs');
           ws.write('world2');
+          ws.send('authed', 'whatevs');
         }
       });
     });
+    var recv = false;
     config.callback = function(err, data) {
+      if (recv) {
+        return;
+      }
+      recv = true;
       should(err).equal(null);
       data.should.equal('world2');
       done(err);
