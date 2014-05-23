@@ -22,6 +22,7 @@ describe('Client part', function() {
     wss.on('connection', function(ws) {
       ws.on('auth', function(message) {
         if (message === config.auth) {
+          ws.send('authed', 'whatevs');
           wss.end();
           done();
           server.close();
@@ -39,10 +40,17 @@ describe('Client part', function() {
     server.listen(config.port, function() {
       app.start(config);
     });
+    config.interval = 10000;
+    config.repeat = function() {
+      if (config.i) {
+        clearInterval(config.i);
+      }
+    };
     wss2.on('connection', function(ws) {
       s = wss2;
       ws.on('auth', function(message) {
         if (message === config.auth) {
+          ws.send('authed', 'whatevs');
           ws.write('world2');
         }
       });

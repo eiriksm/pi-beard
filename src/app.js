@@ -27,6 +27,13 @@ var connect = function(config) {
   client.on('error', function(err) {
     callback(err);
   });
+  client.on('authed', function(msg) {
+    // Client is OK, as far as the server cares.
+    if (config.interval && config.repeat) {
+      config.i = setInterval(config.repeat, config.interval);
+    }
+
+  });
 };
 
 exports.log = function(msg) {
