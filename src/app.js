@@ -34,6 +34,7 @@ var connect = function(config) {
     }
 
   });
+  return client;
 };
 
 exports.log = function(msg) {
@@ -44,5 +45,5 @@ exports.start = function(config) {
   if (!config.callback) {
     config.callback = this.log;
   }
-  connect(config);
+  return connect(config);
 };
