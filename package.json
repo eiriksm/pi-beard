@@ -1,6 +1,6 @@
 {
   "name": "pi-beard",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Pi client of something",
   "main": "index.js",
   "scripts": {
