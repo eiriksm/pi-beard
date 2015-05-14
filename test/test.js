@@ -12,6 +12,7 @@ var config = {
 
 describe('Client part', function() {
   it('Should connect to the specified server', function(done) {
+    this.timeout(10000);
     var server = http.createServer();
     var wss = new Primus(server,
       { transformer: 'engine.io' }
