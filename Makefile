@@ -1,9 +1,11 @@
 install:
 	if hash node > /dev/null 2>&1; then echo "Seems like node.js is alread installed."; exit 1;  fi
-	wget "http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-arm-pi.tar.gz" -O node.tar.gz && tar xvzf node.tar.gz && rm node.tar.gz
+	wget "https://iojs.org/dist/v2.0.1/iojs-v2.0.1-linux-armv6l.tar.gz" -O node.tar.gz && tar xvzf node.tar.gz && rm node.tar.gz
 	sudo mkdir /opt/node
-	sudo mv node*/* /opt/node
+	sudo mv iojs*/* /opt/node
 	sudo ln -s /opt/node/bin/n* /usr/bin
+	sudo ln -s /opt/node/bin/iojs /usr/bin/
+	rm -rf iojs*
 	rm -rf node*
 	node --version
 	npm --version
